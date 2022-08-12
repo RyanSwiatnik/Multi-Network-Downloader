@@ -107,7 +107,8 @@ namespace Multi_Network_Downloader
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0";
-            //TODO create timeout.
+            request.Timeout = 1000;
+
             WebResponse res = request.GetResponse();
 
             WebHeaderCollection headers = res.Headers;
