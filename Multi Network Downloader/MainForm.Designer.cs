@@ -58,8 +58,6 @@
             this.url.Name = "url";
             this.url.Size = new System.Drawing.Size(500, 20);
             this.url.TabIndex = 2;
-            this.url.Text = "http://ciels.ddns.net:8080/Yagate%20Kimi%20ni%20Naru%20-%2001%20%5bE4EAE2EF%5d.mk" +
-    "v";
             // 
             // MainForm
             // 

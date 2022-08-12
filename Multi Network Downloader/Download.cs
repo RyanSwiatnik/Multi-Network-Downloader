@@ -1,108 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO;
-using Microsoft.Win32;
 
 namespace Multi_Network_Downloader
 {
     class Download
     {
-        private readonly int partSize;
+        const int PIECE_SIZE = 4000000;
+
+        private int threadCount;
         private readonly List<IPAddress> adapters;
         private readonly string url;
 
+        private DownloadFile file;
         private int partsCount;
 
-        private byte[] parts;
-
-        public Download(int partSize, List<IPAddress> adapters, string url)
+        public Download(int threadCount, List<IPAddress> adapters, string url)
         {
-            this.partSize = partSize;
+            this.threadCount = threadCount;
             this.adapters = adapters;
             this.url = url;
         }
 
         public void startDownload()
         {
-            int range = getRange(url);
+            long range = getRange(url);
             Console.WriteLine(range);
-            partsCount = Decimal.ToInt32(Math.Ceiling(range / (Decimal)partSize));
+            partsCount = Decimal.ToInt32(Math.Ceiling(range / (Decimal)PIECE_SIZE));
 
-            parts = new byte[range];
+            file = new DownloadFile(partsCount);
 
             //Create threads
-            Task[] tasks = new Task[partsCount];
-            for (int i = 0; i < partsCount; i++)
+            Task[] tasks = new Task[threadCount];
+            for (int i = 0; i < threadCount; i++)
             {
                 int currenti = i;
 
-                IPAddress adapter = adapters[0];
-                if (currenti % 10 == 0)
-                {
-                    adapter = adapters[1];
-                }
-                tasks[currenti] = Task.Factory.StartNew(() => downloadPart(adapter, currenti));
+                tasks[currenti] = Task.Factory.StartNew(() => downloadWorker(adapters[currenti % adapters.Count]));
             }
-            Task.WaitAll(tasks);
-            
 
-            File.WriteAllBytes(Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", String.Empty).ToString() + "\\" + url.Split('/').Last(), parts);
+            Thread saveThread = new Thread(() => file.startSaving(url));
+            saveThread.Name = "File saver";
+            saveThread.Start();
+
+            Task.WaitAll(tasks);
+
             Console.WriteLine("Download Complete");
         }
 
-        private void downloadPart(IPAddress ipAddress, int partPosition)
+        private void downloadWorker(IPAddress adapter)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.ServicePoint.BindIPEndPointDelegate = (servicePoint, remoteEndPoint, retryCount) => new IPEndPoint(ipAddress, 0);
-            request.AddRange(partPosition * partSize, partPosition * partSize + (partSize - 1));
+            int? partPosition = file.getPart();
 
-            try
+            while (partPosition != null)
             {
-                WebResponse res = request.GetResponse();
-
-                Stream streamResponse = res.GetResponseStream();
-                StreamReader streamRead = new StreamReader(streamResponse);
-
-
-                var bytes = default(byte[]);
-                using (var memstream = new MemoryStream())
+                try
                 {
-                    streamRead.BaseStream.CopyTo(memstream);
-                    bytes = memstream.ToArray();
+                    file.setPart(downloadPart(adapter, (int)partPosition), (int)partPosition);
                 }
-                
-                streamRead.Close();
-                streamResponse.Close();
-                res.Close();
+                catch
+                {
+                    Console.WriteLine("Error downloading part " + partPosition + "/" + (partsCount - 1));
+                }
 
-                Buffer.BlockCopy(bytes, 0, parts, partPosition * partSize, bytes.Length);
-                Console.WriteLine("Downloaded part " + partPosition + "/" + (partsCount - 1));
-            } catch
-            {
-                Console.WriteLine("Error downloading part " + partPosition + "/" + (partsCount - 1));
-                downloadPart(ipAddress, partPosition);
+                partPosition = file.getPart();
             }
         }
 
-        private int getRange(String url)
+        private byte[] downloadPart(IPAddress ipAddress, long partPosition)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.ServicePoint.BindIPEndPointDelegate = (servicePoint, remoteEndPoint, retryCount) => new IPEndPoint(ipAddress, 0);
+            request.AddRange(partPosition * PIECE_SIZE, partPosition * PIECE_SIZE + (PIECE_SIZE - 1));
+
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0";
+
+            request.MaximumAutomaticRedirections = 4;
+            request.MaximumResponseHeadersLength = 4;
+
+            WebResponse res = request.GetResponse();
+
+            Stream streamResponse = res.GetResponseStream();
+            StreamReader streamRead = new StreamReader(streamResponse);
+
+
+            var bytes = default(byte[]);
+            using (var memstream = new MemoryStream())
+            {
+                streamRead.BaseStream.CopyTo(memstream);
+                bytes = memstream.ToArray();
+            }
+
+            streamRead.Close();
+            streamResponse.Close();
+            res.Close();
+
+            Console.WriteLine("Downloaded part " + partPosition + "/" + (partsCount - 1));
+
+            return bytes;
+        }
+
+        private long getRange(String url)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0";
+            //TODO create timeout.
             WebResponse res = request.GetResponse();
 
             WebHeaderCollection headers = res.Headers;
 
-            for (int i = 0; i < headers.Count; i++)
-            {
-                if (headers.Keys[i] == "Content-Length")
-                {
-                    return int.Parse(headers[i]);
-                }
-            }
-
-            return 0;
+            return long.Parse(headers.Get("Content-Length"));
         }
     }
 }

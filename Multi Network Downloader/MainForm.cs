@@ -15,10 +15,11 @@ namespace Multi_Network_Downloader
         {
             InitializeComponent();
         }
-        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
-            foreach (NetworkInterface adapter in adapters) {
+            foreach (NetworkInterface adapter in adapters)
+            {
                 interfaceList.Items.Add(adapter.Name);
             }
 
@@ -38,9 +39,11 @@ namespace Multi_Network_Downloader
                     }
                 }
             }
-            
-            Download download = new Download(4000000, selectedAdapters, url.Text);
-            new Thread(download.startDownload).Start();
+
+            Download download = new Download(50, selectedAdapters, url.Text);
+            Thread downloadThread = new Thread(download.startDownload);
+            downloadThread.Name = "Download Manager";
+            downloadThread.Start();
         }
     }
 }
