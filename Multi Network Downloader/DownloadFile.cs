@@ -60,8 +60,26 @@ namespace Multi_Network_Downloader
             bool partsRemaining = true;
             int i = 0;
 
-            //TODO Add existing file check.
-            FileStream file = new FileStream(saveLocation + "\\" + url.Split('/').Last(), FileMode.Append);
+            //Check if file with identical name already exists.
+            string fileName = saveLocation + "\\" + url.Split('/').Last();
+            string newFileName = fileName;
+            int fileSuffix = 1;
+            while(File.Exists(newFileName))
+            {
+                int suffixPosition = fileName.LastIndexOf('.');
+
+                if (suffixPosition != -1)
+                {
+                    newFileName = fileName.Insert(suffixPosition, $"({fileSuffix})");
+                } else
+                {
+                    newFileName = fileName + $"({fileSuffix})";
+                }
+
+                fileSuffix++;
+            }
+
+            FileStream file = new FileStream(newFileName, FileMode.Append);
 
             while (partsRemaining)
             {

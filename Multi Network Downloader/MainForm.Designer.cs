@@ -116,6 +116,7 @@
             this.selectSaveLocation.TabIndex = 6;
             this.selectSaveLocation.Text = "Save Location";
             this.selectSaveLocation.UseVisualStyleBackColor = true;
+            this.selectSaveLocation.Click += new System.EventHandler(this.selectSaveLocation_Click);
             // 
             // saveLocation
             // 
