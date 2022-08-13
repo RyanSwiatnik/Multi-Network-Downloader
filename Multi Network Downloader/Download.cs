@@ -14,15 +14,22 @@ namespace Multi_Network_Downloader
         private int threadCount;
         private readonly List<IPAddress> adapters;
         private readonly string url;
+        private readonly string saveLocation;
 
         private DownloadFile file;
         private int partsCount;
 
-        public Download(int threadCount, List<IPAddress> adapters, string url)
+        private readonly IProgress<int> downloadProgress;
+        private readonly IProgress<int> saveProgress;
+
+        public Download(int threadCount, List<IPAddress> adapters, string url, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress)
         {
             this.threadCount = threadCount;
             this.adapters = adapters;
             this.url = url;
+            this.saveLocation = saveLocation;
+            this.downloadProgress = downloadProgress;
+            this.saveProgress = saveProgress;
         }
 
         public void startDownload()
@@ -31,7 +38,7 @@ namespace Multi_Network_Downloader
             Console.WriteLine(range);
             partsCount = Decimal.ToInt32(Math.Ceiling(range / (Decimal)PIECE_SIZE));
 
-            file = new DownloadFile(partsCount);
+            file = new DownloadFile(partsCount, saveLocation, downloadProgress, saveProgress);
 
             //Create threads
             Task[] tasks = new Task[threadCount];
@@ -63,6 +70,7 @@ namespace Multi_Network_Downloader
                 }
                 catch
                 {
+                    //TODO Fix download error failing to reset part.
                     Console.WriteLine("Error downloading part " + partPosition + "/" + (partsCount - 1));
                 }
 

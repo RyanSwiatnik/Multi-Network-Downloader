@@ -40,10 +40,33 @@ namespace Multi_Network_Downloader
                 }
             }
 
-            Download download = new Download(50, selectedAdapters, url.Text);
+            downloadProgressBar.Value = 0;
+            Progress<int> downloadProgress = new Progress<int>(value =>
+            {
+                downloadProgressBar.Value = value;
+            });
+
+            saveProgressBar.Value = 0;
+            Progress<int> saveProgress = new Progress<int>(value =>
+            {
+                saveProgressBar.Value = value;
+            });
+
+            Download download = new Download((int)threadCount.Value, selectedAdapters, url.Text, saveLocation.Text, downloadProgress, saveProgress);
             Thread downloadThread = new Thread(download.startDownload);
             downloadThread.Name = "Download Manager";
             downloadThread.Start();
+        }
+
+        private void selectSaveLocation_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+            DialogResult result = folderDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
+            {
+                saveLocation.Text = folderDialog.SelectedPath;
+            }
         }
     }
 }

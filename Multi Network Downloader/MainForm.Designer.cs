@@ -31,22 +31,31 @@
             this.interfaceList = new System.Windows.Forms.ListBox();
             this.download = new System.Windows.Forms.Button();
             this.url = new System.Windows.Forms.TextBox();
+            this.downloadProgressBar = new System.Windows.Forms.ProgressBar();
+            this.saveProgressBar = new System.Windows.Forms.ProgressBar();
+            this.threadCount = new System.Windows.Forms.NumericUpDown();
+            this.selectSaveLocation = new System.Windows.Forms.Button();
+            this.saveLocation = new System.Windows.Forms.TextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.threadCount)).BeginInit();
             this.SuspendLayout();
             // 
             // interfaceList
             // 
+            this.interfaceList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.interfaceList.FormattingEnabled = true;
-            this.interfaceList.Location = new System.Drawing.Point(12, 39);
+            this.interfaceList.Location = new System.Drawing.Point(12, 128);
             this.interfaceList.Name = "interfaceList";
             this.interfaceList.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.interfaceList.Size = new System.Drawing.Size(234, 160);
+            this.interfaceList.Size = new System.Drawing.Size(234, 173);
             this.interfaceList.TabIndex = 0;
             // 
             // download
             // 
-            this.download.Location = new System.Drawing.Point(252, 39);
+            this.download.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.download.Location = new System.Drawing.Point(429, 41);
             this.download.Name = "download";
-            this.download.Size = new System.Drawing.Size(75, 23);
+            this.download.Size = new System.Drawing.Size(84, 23);
             this.download.TabIndex = 1;
             this.download.Text = "Download";
             this.download.UseVisualStyleBackColor = true;
@@ -54,22 +63,85 @@
             // 
             // url
             // 
-            this.url.Location = new System.Drawing.Point(12, 13);
+            this.url.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.url.Location = new System.Drawing.Point(12, 41);
             this.url.Name = "url";
-            this.url.Size = new System.Drawing.Size(500, 20);
+            this.url.Size = new System.Drawing.Size(411, 20);
             this.url.TabIndex = 2;
+            // 
+            // downloadProgressBar
+            // 
+            this.downloadProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.downloadProgressBar.Location = new System.Drawing.Point(12, 70);
+            this.downloadProgressBar.Name = "downloadProgressBar";
+            this.downloadProgressBar.Size = new System.Drawing.Size(500, 23);
+            this.downloadProgressBar.TabIndex = 3;
+            // 
+            // saveProgressBar
+            // 
+            this.saveProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveProgressBar.Location = new System.Drawing.Point(12, 99);
+            this.saveProgressBar.Name = "saveProgressBar";
+            this.saveProgressBar.Size = new System.Drawing.Size(500, 23);
+            this.saveProgressBar.TabIndex = 4;
+            // 
+            // threadCount
+            // 
+            this.threadCount.Location = new System.Drawing.Point(252, 128);
+            this.threadCount.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.threadCount.Name = "threadCount";
+            this.threadCount.Size = new System.Drawing.Size(71, 20);
+            this.threadCount.TabIndex = 5;
+            this.threadCount.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            // 
+            // selectSaveLocation
+            // 
+            this.selectSaveLocation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectSaveLocation.Location = new System.Drawing.Point(429, 12);
+            this.selectSaveLocation.Name = "selectSaveLocation";
+            this.selectSaveLocation.Size = new System.Drawing.Size(84, 23);
+            this.selectSaveLocation.TabIndex = 6;
+            this.selectSaveLocation.Text = "Save Location";
+            this.selectSaveLocation.UseVisualStyleBackColor = true;
+            // 
+            // saveLocation
+            // 
+            this.saveLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveLocation.Location = new System.Drawing.Point(13, 12);
+            this.saveLocation.Name = "saveLocation";
+            this.saveLocation.Size = new System.Drawing.Size(410, 20);
+            this.saveLocation.TabIndex = 7;
+            this.saveLocation.Text = "F:\\Users\\Ryan\\Downloads";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(525, 215);
+            this.ClientSize = new System.Drawing.Size(525, 314);
+            this.Controls.Add(this.saveLocation);
+            this.Controls.Add(this.selectSaveLocation);
+            this.Controls.Add(this.threadCount);
+            this.Controls.Add(this.saveProgressBar);
+            this.Controls.Add(this.downloadProgressBar);
             this.Controls.Add(this.url);
             this.Controls.Add(this.download);
             this.Controls.Add(this.interfaceList);
             this.Name = "MainForm";
             this.Text = "Multi Network Downloader";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.threadCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,6 +152,11 @@
         private System.Windows.Forms.ListBox interfaceList;
         private System.Windows.Forms.Button download;
         private System.Windows.Forms.TextBox url;
+        private System.Windows.Forms.ProgressBar downloadProgressBar;
+        private System.Windows.Forms.ProgressBar saveProgressBar;
+        private System.Windows.Forms.NumericUpDown threadCount;
+        private System.Windows.Forms.Button selectSaveLocation;
+        private System.Windows.Forms.TextBox saveLocation;
     }
 }
 

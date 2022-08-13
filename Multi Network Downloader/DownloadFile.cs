@@ -2,17 +2,25 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.IO;
-using Microsoft.Win32;
 
 namespace Multi_Network_Downloader
 {
     class DownloadFile
     {
         private FilePiece[] pieces;
+        private readonly string saveLocation;
 
-        public DownloadFile(int partsCount)
+        private int downloadedPieces = 0;
+        private int savedPieces = 0;
+        private readonly IProgress<int> downloadProgress;
+        private readonly IProgress<int> saveProgress;
+
+        public DownloadFile(int partsCount, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress)
         {
             pieces = new FilePiece[partsCount];
+            this.saveLocation = saveLocation;
+            this.downloadProgress = downloadProgress;
+            this.saveProgress = saveProgress;
         }
 
         public int? getPart()
@@ -37,6 +45,9 @@ namespace Multi_Network_Downloader
         {
             pieces[partPosition].setData(bytes);
 
+            downloadedPieces++;
+            double downloadPercentage = (double)downloadedPieces / (double)pieces.Length * 100;
+            downloadProgress.Report((int)Math.Round(downloadPercentage));
         }
 
         public void startSaving(string url)
@@ -45,7 +56,7 @@ namespace Multi_Network_Downloader
             int i = 0;
 
             //TODO Add existing file check.
-            FileStream file = new FileStream(Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", String.Empty).ToString() + "\\" + url.Split('/').Last(), FileMode.Append);
+            FileStream file = new FileStream(saveLocation + "\\" + url.Split('/').Last(), FileMode.Append);
 
             while (partsRemaining)
             {
@@ -56,7 +67,12 @@ namespace Multi_Network_Downloader
                     file.Write(data, 0, data.Length);
 
                     pieces[i].setSaved();
-                    Console.WriteLine("Saved part " + i);
+
+                    savedPieces++;
+                    double savePercentage = (double)savedPieces / (double)pieces.Length * 100;
+                    saveProgress.Report((int)Math.Round(savePercentage));
+
+                    Console.WriteLine("Saved part " + i + "/" + (pieces.Length - 1));
 
                     if (i == pieces.Length - 1)
                     {
@@ -71,6 +87,5 @@ namespace Multi_Network_Downloader
 
             Console.WriteLine("Save Complete");
         }
-
     }
 }
