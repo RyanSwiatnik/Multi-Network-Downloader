@@ -9,9 +9,9 @@ namespace Multi_Network_Downloader
 {
     class Download
     {
-        const int PIECE_SIZE = 4000000;
+        const int PIECE_SIZE = 8000000;
 
-        private int threadCount;
+        private readonly int threadCount;
         private readonly List<IPAddress> adapters;
         private readonly string url;
         private readonly string saveLocation;

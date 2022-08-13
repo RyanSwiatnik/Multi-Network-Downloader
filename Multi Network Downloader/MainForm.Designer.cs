@@ -75,6 +75,7 @@
             this.downloadProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.downloadProgressBar.Location = new System.Drawing.Point(12, 70);
+            this.downloadProgressBar.Maximum = 1000;
             this.downloadProgressBar.Name = "downloadProgressBar";
             this.downloadProgressBar.Size = new System.Drawing.Size(500, 23);
             this.downloadProgressBar.TabIndex = 3;
@@ -84,6 +85,7 @@
             this.saveProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.saveProgressBar.Location = new System.Drawing.Point(12, 99);
+            this.saveProgressBar.Maximum = 1000;
             this.saveProgressBar.Name = "saveProgressBar";
             this.saveProgressBar.Size = new System.Drawing.Size(500, 23);
             this.saveProgressBar.TabIndex = 4;

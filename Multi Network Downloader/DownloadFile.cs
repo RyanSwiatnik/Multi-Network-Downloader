@@ -46,7 +46,7 @@ namespace Multi_Network_Downloader
             pieces[partPosition].setData(bytes);
 
             downloadedPieces++;
-            double downloadPercentage = (double)downloadedPieces / (double)pieces.Length * 100;
+            double downloadPercentage = (double)downloadedPieces / (double)pieces.Length * 1000;
             downloadProgress.Report((int)Math.Round(downloadPercentage));
         }
 
@@ -74,7 +74,7 @@ namespace Multi_Network_Downloader
                     pieces[i].setSaved();
 
                     savedPieces++;
-                    double savePercentage = (double)savedPieces / (double)pieces.Length * 100;
+                    double savePercentage = (double)savedPieces / (double)pieces.Length * 1000;
                     saveProgress.Report((int)Math.Round(savePercentage));
 
                     Console.WriteLine("Saved part " + i + "/" + (pieces.Length - 1));
