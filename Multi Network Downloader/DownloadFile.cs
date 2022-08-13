@@ -50,6 +50,11 @@ namespace Multi_Network_Downloader
             downloadProgress.Report((int)Math.Round(downloadPercentage));
         }
 
+        public void failPart(int partPosition)
+        {
+            pieces[partPosition] = null;
+        }
+
         public void startSaving(string url)
         {
             bool partsRemaining = true;

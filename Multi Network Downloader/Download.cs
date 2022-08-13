@@ -70,7 +70,7 @@ namespace Multi_Network_Downloader
                 }
                 catch
                 {
-                    //TODO Fix download error failing to reset part.
+                    file.failPart((int)partPosition);
                     Console.WriteLine("Error downloading part " + partPosition + "/" + (partsCount - 1));
                 }
 
@@ -88,6 +88,7 @@ namespace Multi_Network_Downloader
 
             request.MaximumAutomaticRedirections = 4;
             request.MaximumResponseHeadersLength = 4;
+            request.Timeout = 10000;
 
             WebResponse res = request.GetResponse();
 
