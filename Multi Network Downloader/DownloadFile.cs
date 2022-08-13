@@ -64,14 +64,15 @@ namespace Multi_Network_Downloader
             string fileName = saveLocation + "\\" + url.Split('/').Last();
             string newFileName = fileName;
             int fileSuffix = 1;
-            while(File.Exists(newFileName))
+            while (File.Exists(newFileName))
             {
                 int suffixPosition = fileName.LastIndexOf('.');
 
                 if (suffixPosition != -1)
                 {
                     newFileName = fileName.Insert(suffixPosition, $"({fileSuffix})");
-                } else
+                }
+                else
                 {
                     newFileName = fileName + $"({fileSuffix})";
                 }
