@@ -74,7 +74,7 @@ namespace Multi_Network_Downloader
                 catch
                 {
                     file.failPart((int)partPosition);
-                    Console.WriteLine("Error downloading part " + partPosition + "/" + (partsCount - 1));
+                    Console.WriteLine($"Error downloaded part {partPosition}/{(partsCount - 1)} using {adapter}");
                 }
 
                 partPosition = file.getPart();
@@ -91,6 +91,8 @@ namespace Multi_Network_Downloader
 
             request.MaximumAutomaticRedirections = 4;
             request.MaximumResponseHeadersLength = 4;
+            request.ContentLength = 0;
+            request.KeepAlive = false;
             request.Timeout = 10000;
 
             WebResponse res = request.GetResponse();
@@ -110,7 +112,7 @@ namespace Multi_Network_Downloader
             streamResponse.Close();
             res.Close();
 
-            Console.WriteLine("Downloaded part " + partPosition + "/" + (partsCount - 1));
+            Console.WriteLine($"Downloaded part {partPosition}/{(partsCount - 1)} using {ipAddress}");
 
             return bytes;
         }
@@ -119,7 +121,7 @@ namespace Multi_Network_Downloader
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0";
-            request.Timeout = 1000;
+            request.Timeout = 10000;
 
             WebResponse res = request.GetResponse();
 
