@@ -127,7 +127,6 @@
             this.saveLocation.Name = "saveLocation";
             this.saveLocation.Size = new System.Drawing.Size(410, 20);
             this.saveLocation.TabIndex = 0;
-            this.saveLocation.Text = "F:\\Users\\Ryan\\Downloads";
             // 
             // threadsLabel
             // 

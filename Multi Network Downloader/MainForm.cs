@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace Multi_Network_Downloader
 {
@@ -24,6 +25,8 @@ namespace Multi_Network_Downloader
             }
 
             interfaceList.SetSelected(0, true);
+
+            saveLocation.Text = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", String.Empty).ToString();
         }
 
         private void download_Click(object sender, EventArgs e)
