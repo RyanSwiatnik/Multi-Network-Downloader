@@ -64,6 +64,7 @@ namespace Multi_Network_Downloader
         private void downloadWorker(IPAddress adapter)
         {
             int? partPosition = file.getPart();
+            int failCount = 0;
 
             while (partPosition != null)
             {
@@ -74,10 +75,18 @@ namespace Multi_Network_Downloader
                 catch
                 {
                     file.failPart((int)partPosition);
+                    failCount++;
                     Console.WriteLine($"Error downloaded part {partPosition}/{(partsCount - 1)} using {adapter}");
                 }
 
-                partPosition = file.getPart();
+                if (failCount < 3)
+                {
+                    partPosition = file.getPart();
+                }
+                else
+                {
+                    partPosition = null;
+                }
             }
         }
 
