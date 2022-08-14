@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.interfaceList = new System.Windows.Forms.ListBox();
             this.download = new System.Windows.Forms.Button();
             this.url = new System.Windows.Forms.TextBox();
@@ -151,6 +152,7 @@
             this.Controls.Add(this.url);
             this.Controls.Add(this.download);
             this.Controls.Add(this.interfaceList);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Multi Network Downloader";
             this.Load += new System.EventHandler(this.MainForm_Load);
