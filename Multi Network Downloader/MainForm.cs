@@ -31,14 +31,14 @@ namespace Multi_Network_Downloader
 
         private void download_Click(object sender, EventArgs e)
         {
-            List<IPAddress> selectedAdapters = new List<IPAddress>();
+            List<IPEndPoint> selectedAdapters = new List<IPEndPoint>();
             for (int i = 0; i < interfaceList.SelectedIndices.Count; i++)
             {
                 foreach (UnicastIPAddressInformation ip in adapters[interfaceList.SelectedIndices[i]].GetIPProperties().UnicastAddresses)
                 {
                     if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                     {
-                        selectedAdapters.Add(ip.Address);
+                        selectedAdapters.Add(new IPEndPoint(ip.Address, 0));
                     }
                 }
             }

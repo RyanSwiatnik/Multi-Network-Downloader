@@ -15,7 +15,7 @@ namespace Multi_Network_Downloader
         const int PIECE_SIZE = 4000000;
 
         private readonly int threadCount;
-        private readonly List<IPAddress> adapters;
+        private readonly List<IPEndPoint> adapters;
         private readonly string url;
         private readonly string saveLocation;
 
@@ -25,7 +25,7 @@ namespace Multi_Network_Downloader
         private readonly IProgress<int> downloadProgress;
         private readonly IProgress<int> saveProgress;
 
-        public Download(int threadCount, List<IPAddress> adapters, string url, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress)
+        public Download(int threadCount, List<IPEndPoint> adapters, string url, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress)
         {
             this.threadCount = threadCount;
             this.adapters = adapters;
@@ -61,7 +61,7 @@ namespace Multi_Network_Downloader
             Console.WriteLine("Download Complete");
         }
 
-        private void downloadWorker(IPAddress adapter)
+        private void downloadWorker(IPEndPoint adapter)
         {
             int? partPosition = file.getPart();
             int failCount = 0;
@@ -90,10 +90,21 @@ namespace Multi_Network_Downloader
             }
         }
 
-        private byte[] downloadPart(IPAddress ipAddress, long partPosition)
+        private byte[] downloadPart(IPEndPoint ipEndPoint, long partPosition)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.ServicePoint.BindIPEndPointDelegate = (servicePoint, remoteEndPoint, retryCount) => new IPEndPoint(ipAddress, 0);
+            request.ServicePoint.BindIPEndPointDelegate = (servicePoint, remoteEndPoint, retryCount) =>
+            {
+                if (retryCount < 3)
+                {
+                    return ipEndPoint;
+                }
+                else
+                {
+                    Console.WriteLine($"Failed binding to {ipEndPoint.Address}");
+                    return null;
+                }
+            };
             request.AddRange(partPosition * PIECE_SIZE, partPosition * PIECE_SIZE + (PIECE_SIZE - 1));
 
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0";
@@ -121,7 +132,7 @@ namespace Multi_Network_Downloader
             streamResponse.Close();
             res.Close();
 
-            Console.WriteLine($"Downloaded part {partPosition}/{(partsCount - 1)} using {ipAddress}");
+            Console.WriteLine($"Downloaded part {partPosition}/{(partsCount - 1)} using {ipEndPoint}");
 
             return bytes;
         }
