@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.IO;
+using Microsoft.Win32;
 
 namespace Multi_Network_Downloader
 {
@@ -80,7 +81,16 @@ namespace Multi_Network_Downloader
                 fileSuffix++;
             }
 
-            FileStream file = new FileStream(newFileName, FileMode.Append);
+            FileStream file;
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(newFileName));
+                file = new FileStream(newFileName, FileMode.Append);
+            }
+            catch
+            {
+                file = new FileStream(Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", String.Empty).ToString() + "\\" + url.Split('/').Last(), FileMode.Append);
+            }
 
             while (partsRemaining)
             {

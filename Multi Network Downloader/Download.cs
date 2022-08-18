@@ -24,8 +24,9 @@ namespace Multi_Network_Downloader
 
         private readonly IProgress<int> downloadProgress;
         private readonly IProgress<int> saveProgress;
+        private readonly IProgress<string> downloadStatus;
 
-        public Download(int threadCount, List<IPEndPoint> adapters, string url, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress)
+        public Download(int threadCount, List<IPEndPoint> adapters, string url, string saveLocation, IProgress<int> downloadProgress, IProgress<int> saveProgress, IProgress<string> downloadStatus)
         {
             this.threadCount = threadCount;
             this.adapters = adapters;
@@ -33,32 +34,57 @@ namespace Multi_Network_Downloader
             this.saveLocation = saveLocation;
             this.downloadProgress = downloadProgress;
             this.saveProgress = saveProgress;
+            this.downloadStatus = downloadStatus;
         }
 
         public void startDownload()
         {
-            long range = getRange(url);
-            Console.WriteLine(range);
-            partsCount = Decimal.ToInt32(Math.Ceiling(range / (Decimal)PIECE_SIZE));
-
-            file = new DownloadFile(partsCount, saveLocation, downloadProgress, saveProgress);
-
-            //Create threads
-            Task[] tasks = new Task[threadCount];
-            for (int i = 0; i < threadCount; i++)
+            try
             {
-                int currenti = i;
+                if (adapters.Count == 0)
+                {
+                    throw new Exception("Network adapter not selected.");
+                }
 
-                tasks[currenti] = Task.Factory.StartNew(() => downloadWorker(adapters[currenti % adapters.Count]));
+                long range = getRange(url);
+                Console.WriteLine(range);
+                partsCount = Decimal.ToInt32(Math.Ceiling(range / (Decimal)PIECE_SIZE));
+
+                downloadStatus.Report("Downloading...");
+                file = new DownloadFile(partsCount, saveLocation, downloadProgress, saveProgress);
+
+                //Create threads
+                Task[] tasks = new Task[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    int currenti = i;
+
+                    tasks[currenti] = Task.Factory.StartNew(() => downloadWorker(adapters[currenti % adapters.Count]));
+                }
+
+                Thread saveThread = new Thread(() => file.startSaving(url));
+                saveThread.Name = "File saver";
+                saveThread.Start();
+
+                Task.WaitAll(tasks);
+
+                Console.WriteLine("Download Complete");
+
+                if (saveThread.Join(10000))
+                {
+                    downloadStatus.Report("Download Complete!");
+                }
+                else
+                {
+                    downloadStatus.Report("Download Timeout.");
+                    saveThread.Abort();
+                }
             }
-
-            Thread saveThread = new Thread(() => file.startSaving(url));
-            saveThread.Name = "File saver";
-            saveThread.Start();
-
-            Task.WaitAll(tasks);
-
-            Console.WriteLine("Download Complete");
+            catch (Exception ex)
+            {
+                downloadStatus.Report($"Download Error: {ex.Message}");
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         private void downloadWorker(IPEndPoint adapter)

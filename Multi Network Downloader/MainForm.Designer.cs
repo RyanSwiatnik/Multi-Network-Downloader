@@ -38,6 +38,7 @@
             this.selectSaveLocation = new System.Windows.Forms.Button();
             this.saveLocation = new System.Windows.Forms.TextBox();
             this.threadsLabel = new System.Windows.Forms.Label();
+            this.downloadStatusLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.threadCount)).BeginInit();
             this.SuspendLayout();
             // 
@@ -138,11 +139,21 @@
             this.threadsLabel.TabIndex = 7;
             this.threadsLabel.Text = "Threads:";
             // 
+            // downloadStatusLabel
+            // 
+            this.downloadStatusLabel.AutoSize = true;
+            this.downloadStatusLabel.Location = new System.Drawing.Point(252, 151);
+            this.downloadStatusLabel.Name = "downloadStatusLabel";
+            this.downloadStatusLabel.Size = new System.Drawing.Size(24, 13);
+            this.downloadStatusLabel.TabIndex = 9;
+            this.downloadStatusLabel.Text = "Idle";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(525, 314);
+            this.Controls.Add(this.downloadStatusLabel);
             this.Controls.Add(this.threadsLabel);
             this.Controls.Add(this.saveLocation);
             this.Controls.Add(this.selectSaveLocation);
@@ -153,6 +164,7 @@
             this.Controls.Add(this.download);
             this.Controls.Add(this.interfaceList);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(410, 210);
             this.Name = "MainForm";
             this.Text = "Multi Network Downloader";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -173,6 +185,7 @@
         private System.Windows.Forms.Button selectSaveLocation;
         private System.Windows.Forms.TextBox saveLocation;
         private System.Windows.Forms.Label threadsLabel;
+        private System.Windows.Forms.Label downloadStatusLabel;
     }
 }
 

@@ -12,6 +12,10 @@ namespace Multi_Network_Downloader
     {
         NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
+        Progress<int> downloadProgress;
+        Progress<int> saveProgress;
+        Progress<string> downloadStatus;
+
         public MainForm()
         {
             InitializeComponent();
@@ -27,6 +31,11 @@ namespace Multi_Network_Downloader
             interfaceList.SetSelected(0, true);
 
             saveLocation.Text = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", String.Empty).ToString();
+
+            saveProgress = new Progress<int>(value => saveProgressBar.Value = value);
+            downloadProgress = new Progress<int>(value => downloadProgressBar.Value = value);
+
+            downloadStatus = new Progress<string>(value => downloadStatusLabel.Text = value);
         }
 
         private void download_Click(object sender, EventArgs e)
@@ -44,18 +53,9 @@ namespace Multi_Network_Downloader
             }
 
             downloadProgressBar.Value = 0;
-            Progress<int> downloadProgress = new Progress<int>(value =>
-            {
-                downloadProgressBar.Value = value;
-            });
-
             saveProgressBar.Value = 0;
-            Progress<int> saveProgress = new Progress<int>(value =>
-            {
-                saveProgressBar.Value = value;
-            });
 
-            Download download = new Download((int)threadCount.Value, selectedAdapters, url.Text, saveLocation.Text, downloadProgress, saveProgress);
+            Download download = new Download((int)threadCount.Value, selectedAdapters, url.Text, saveLocation.Text, downloadProgress, saveProgress, downloadStatus);
             Thread downloadThread = new Thread(download.startDownload);
             downloadThread.Name = "Download Manager";
             downloadThread.Start();
