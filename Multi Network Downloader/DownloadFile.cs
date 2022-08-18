@@ -98,14 +98,17 @@ namespace Multi_Network_Downloader
 
                     Console.WriteLine("Saved part " + i + "/" + (pieces.Length - 1));
 
-                    if (i == pieces.Length - 1)
-                    {
-                        partsRemaining = false;
-                    }
                     i++;
                 }
 
-                Thread.Sleep(100);
+                if (i == pieces.Length)
+                {
+                    partsRemaining = false;
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
             file.Close();
 
