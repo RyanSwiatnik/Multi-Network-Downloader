@@ -56,8 +56,11 @@ namespace Multi_Network_Downloader
             saveProgressBar.Value = 0;
 
             Download download = new Download((int)threadCount.Value, selectedAdapters, url.Text, saveLocation.Text, downloadProgress, saveProgress, downloadStatus);
-            Thread downloadThread = new Thread(download.startDownload);
-            downloadThread.Name = "Download Manager";
+            Thread downloadThread = new Thread(download.startDownload)
+            {
+                Name = "Download Manager",
+                IsBackground = true
+            };
             downloadThread.Start();
         }
 

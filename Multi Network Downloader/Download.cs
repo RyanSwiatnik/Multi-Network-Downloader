@@ -62,8 +62,11 @@ namespace Multi_Network_Downloader
                     tasks[currenti] = Task.Factory.StartNew(() => downloadWorker(adapters[currenti % adapters.Count]));
                 }
 
-                Thread saveThread = new Thread(() => file.startSaving(url));
-                saveThread.Name = "File saver";
+                Thread saveThread = new Thread(() => file.startSaving(url))
+                {
+                    Name = "File saver",
+                    IsBackground = true
+                };
                 saveThread.Start();
 
                 Task.WaitAll(tasks);
